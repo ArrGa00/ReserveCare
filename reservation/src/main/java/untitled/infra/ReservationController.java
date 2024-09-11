@@ -21,7 +21,7 @@ public class ReservationController {
     ReservationRepository reservationRepository;
 
     @RequestMapping(
-        value = "/reservations/{id}//hospitalizationcancel",
+        value = "/reservations/{id}/hospitalizationcancel",
         method = RequestMethod.PUT,
         produces = "application/json;charset=UTF-8"
     )
@@ -40,7 +40,8 @@ public class ReservationController {
         optionalReservation.orElseThrow(() -> new Exception("No Entity Found"));
         Reservation reservation = optionalReservation.get();
         reservation.hospitalizationCancel();
-
+        
+        reservation.setStatus("요청취소");
         reservationRepository.save(reservation);
         return reservation;
     }

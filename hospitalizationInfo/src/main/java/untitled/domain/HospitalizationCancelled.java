@@ -7,7 +7,7 @@ import untitled.infra.AbstractEvent;
 
 @Data
 @ToString
-public class HospitalizationCanceled extends AbstractEvent {
+public class HospitalizationCancelled extends AbstractEvent {
 
     private Long id;
     private Long patientId;

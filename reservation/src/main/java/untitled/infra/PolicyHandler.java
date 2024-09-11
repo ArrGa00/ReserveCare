@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import untitled.config.kafka.KafkaProcessor;
 import untitled.domain.*;
 
-//<<< Clean Arch / Inbound Adaptor
 @Service
 @Transactional
 public class PolicyHandler {
@@ -22,6 +21,7 @@ public class PolicyHandler {
 
     @StreamListener(KafkaProcessor.INPUT)
     public void whatever(@Payload String eventString) {}
+
 
     @StreamListener(
         value = KafkaProcessor.INPUT,
@@ -37,7 +37,6 @@ public class PolicyHandler {
             "\n\n"
         );
 
-        // Sample Logic //
         Reservation.updateStatus(event);
     }
 
@@ -55,8 +54,7 @@ public class PolicyHandler {
             "\n\n"
         );
 
-        // Sample Logic //
         Reservation.updateStatus(event);
     }
 }
-//>>> Clean Arch / Inbound Adaptor
+

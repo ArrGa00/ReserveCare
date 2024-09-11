@@ -182,7 +182,6 @@ public class Hospital  {
     }
 
     private Hospital getHospitalLocationByhpid(Hospital hospital) throws Exception {
-        System.out.println("테스트 중4----------");
         String API_URL = "https://apis.data.go.kr/B552657/ErmctInfoInqireService/getEgytBassInfoInqire";
         Map<String, String> params = new HashMap<>();
         params.put("HPID", hospital.getHpid());
@@ -224,57 +223,35 @@ public class Hospital  {
         return getPotalXmlData(API_URL, params);
     }
 
-//<<< Clean Arch / Port Method
     public static void bedsUpdate(HospitalizationApproved hospitalizationApproved){
         
-        //implement business logic here:
-
-        /** Example 1:  new item 
-        Hospital hospital = new Hospital();
-        repository().save(hospital);
-
-        */
-
-        /** Example 2:  finding and process
-        
-        repository().findById(hospitalizationApproved.get???()).ifPresent(hospital->{
+        repository().findById(hospitalizationApproved.getBedsId()).ifPresent(beds->{
             
-            hospital // do something
-            repository().save(hospital);
+            if (beds.getRemain() > 0) {
+                beds.setRemain(beds.getRemain()-1);
+                repository().save(beds);
+            } else {
+                // 보상 트랜젝션을 구현해야할지
+                System.out.println("남은 자리가 없습니다.");
+            }
 
-
-         });
-        */
-
-        
+         });  
     }
-//>>> Clean Arch / Port Method
-//<<< Clean Arch / Port Method
+
     public static void bedsUpdate(Discharged discharged){
         
-        //implement business logic here:
-
-        /** Example 1:  new item 
-        Hospital hospital = new Hospital();
-        repository().save(hospital);
-
-        */
-
-        /** Example 2:  finding and process
-        
-        repository().findById(discharged.get???()).ifPresent(hospital->{
+        repository().findById(discharged.getBedsId()).ifPresent(beds->{
             
-            hospital // do something
-            repository().save(hospital);
-
-
+            if (beds.getRemain()+1 > beds.getTotalBeds()){
+                beds.setRemain(beds.getRemain()+1);
+                repository().save(beds);
+            } else {
+                System.out.println("잘못된 데이터: 전체 병상보다 가용 병상이 많을 수 없음.");
+                beds.setRemain(beds.getTotalBeds());
+                repository().save(beds);
+            }
          });
-        */
-
         
     }
-//>>> Clean Arch / Port Method
-
 
 }
-//>>> DDD / Aggregate Root
