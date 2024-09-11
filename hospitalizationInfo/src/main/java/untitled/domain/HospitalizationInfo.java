@@ -28,16 +28,13 @@ public class HospitalizationInfo {
 
     private String status;
 
-    private Long hospitalizationId;
+    private Long reservationId;
 
     private String patientName;
 
     @PostPersist
     public void onPostPersist() {
-        HospitalizationApproved hospitalizationApproved = new HospitalizationApproved(
-            this
-        );
-        hospitalizationApproved.publishAfterCommit();
+
     }
 
     public static HospitalizationInfoRepository repository() {
@@ -47,85 +44,52 @@ public class HospitalizationInfo {
         return hospitalizationInfoRepository;
     }
 
-    //<<< Clean Arch / Port Method
     public void approve() {
-        //implement business logic here:
-
+        HospitalizationApproved hospitalizationApproved = new HospitalizationApproved(this);
+        hospitalizationApproved.publishAfterCommit();
     }
 
-    //>>> Clean Arch / Port Method
-    //<<< Clean Arch / Port Method
-    public void discharge() {
-        //implement business logic here:
+    public void reject() {
+        HospitalizationRejected hospitalizationRejected = new HospitalizationRejected(this);
+        hospitalizationRejected.publishAfterCommit();
+    }
 
+    public void discharge() {
         Discharged discharged = new Discharged(this);
         discharged.publishAfterCommit();
     }
 
-    //>>> Clean Arch / Port Method
-    //<<< Clean Arch / Port Method
-    public void reject() {
-        //implement business logic here:
-
-        HospitalizationRejected hospitalizationRejected = new HospitalizationRejected(
-            this
-        );
-        hospitalizationRejected.publishAfterCommit();
-    }
-
-    //>>> Clean Arch / Port Method
-
-    //<<< Clean Arch / Port Method
     public static void createHospitalInfo(
         HospitalizationReserved hospitalizationReserved
     ) {
-        //implement business logic here:
-
-        /** Example 1:  new item 
-        HospitalizationInfo hospitalizationInfo = new HospitalizationInfo();
-        repository().save(hospitalizationInfo);
-
-        */
-
-        /** Example 2:  finding and process
-        
-        repository().findById(hospitalizationReserved.get???()).ifPresent(hospitalizationInfo->{
-            
-            hospitalizationInfo // do something
-            repository().save(hospitalizationInfo);
-
-
-         });
-        */
-
+        Hospital hospital = new Hospital();
+        hospital.setBedsId(hospitalizationReserved.getBedsId());
+        hospital.setPatientId(hospitalizationReserved.getPatientId());
+        hospital.setHospitalizationId(hospitalizationReserved.getId());
+        hospital.setStatus("요청 받음");
+        repository().save(hospital);
     }
 
-    //>>> Clean Arch / Port Method
-    //<<< Clean Arch / Port Method
     public static void updateStatus(
         HospitalizationCanceled hospitalizationCanceled
     ) {
-        //implement business logic here:
-
-        /** Example 1:  new item 
-        HospitalizationInfo hospitalizationInfo = new HospitalizationInfo();
-        repository().save(hospitalizationInfo);
-
-        */
-
-        /** Example 2:  finding and process
-        
-        repository().findById(hospitalizationCanceled.get???()).ifPresent(hospitalizationInfo->{
+        repository().findById(Long.valueOf(hospitalizationCancelled.getBedsId())).ifPresent(hospital->{
             
-            hospitalizationInfo // do something
-            repository().save(hospitalizationInfo);
-
-
+            if (!hospital.getStatus().equals("승인")){
+                hospital.setStatus("예약취소됨");
+                repository().save(hospital);
+            } else {
+                // 이벤트를 발행해야하는지 -> hospitalization과 hospital 상태 2개를 취소로 변경만 함
+                System.out.println(
+                    "\n\n##### 예약취소 불가능함 : " +
+                    "hospital.java - updateStatus 에서 예외처리" +
+                    "\n\n"
+                );
+            }
          });
-        */
 
     }
-    //>>> Clean Arch / Port Method
+    
 
 }
 //>>> DDD / Aggregate Root

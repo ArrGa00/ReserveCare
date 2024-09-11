@@ -37,7 +37,6 @@ public class PolicyHandler {
             "\n\n"
         );
 
-        // Sample Logic //
         HospitalizationInfo.createHospitalInfo(event);
     }
 
