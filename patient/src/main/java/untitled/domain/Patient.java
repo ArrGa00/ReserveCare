@@ -45,19 +45,12 @@ public class Patient {
         return patientRepository;
     }
 
-    //<<< Clean Arch / Port Method
     public void patientUpdate() {
-        //implement business logic here:
-
         PatientModified patientModified = new PatientModified(this);
         patientModified.publishAfterCommit();
     }
 
-    //>>> Clean Arch / Port Method
-    //<<< Clean Arch / Port Method
     public void patientDelete() {
-        //implement business logic here:
-
         PatientDeleted patientDeleted = new PatientDeleted(this);
         patientDeleted.publishAfterCommit();
     }

@@ -21,28 +21,33 @@ public class PatientController {
     PatientRepository patientRepository;
 
     @RequestMapping(
-        value = "/patients/{id}//patientupdate",
+        value = "/patients/{id}/patientupdate",
         method = RequestMethod.PUT,
         produces = "application/json;charset=UTF-8"
     )
     public Patient patientUpdate(
         @PathVariable(value = "id") Long id,
+        @RequestBody Patient updatedPatient,
         HttpServletRequest request,
         HttpServletResponse response
     ) throws Exception {
-        System.out.println("##### /patient/patientUpdate  called #####");
+        System.out.println("##### /patient/patientupdate  called #####");
         Optional<Patient> optionalPatient = patientRepository.findById(id);
 
         optionalPatient.orElseThrow(() -> new Exception("No Entity Found"));
         Patient patient = optionalPatient.get();
-        patient.patientUpdate();
+        patient.setPatientName(updatedPatient.getPatientName());
+        patient.setPatientDisease(updatedPatient.getPatientDisease());
+        patient.setPatientNumber(updatedPatient.getPatientNumber());
+        patient.setStatus(updatedPatient.getStatus());
 
+        patient.patientUpdate();
         patientRepository.save(patient);
         return patient;
     }
 
     @RequestMapping(
-        value = "/patients/{id}//patientdelete",
+        value = "/patients/{id}/patientdelete",
         method = RequestMethod.PUT,
         produces = "application/json;charset=UTF-8"
     )
@@ -51,14 +56,15 @@ public class PatientController {
         HttpServletRequest request,
         HttpServletResponse response
     ) throws Exception {
-        System.out.println("##### /patient/patientDelete  called #####");
+        System.out.println("##### /patient/patientdelete  called #####");
         Optional<Patient> optionalPatient = patientRepository.findById(id);
 
         optionalPatient.orElseThrow(() -> new Exception("No Entity Found"));
         Patient patient = optionalPatient.get();
         patient.patientDelete();
 
-        patientRepository.save(patient);
+        // 실제로 삭제
+        patientRepository.delete(patient);
         return patient;
     }
 }
