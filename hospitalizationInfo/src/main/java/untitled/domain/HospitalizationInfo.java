@@ -1,6 +1,7 @@
 package untitled.domain;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.*;
@@ -20,9 +21,9 @@ public class HospitalizationInfo {
 
     private Long bedsId;
 
-    private Date startDate;
+    private LocalDateTime startDate;
 
-    private Date endDate;
+    private LocalDateTime endDate;
 
     private Long patientId;
 
@@ -62,24 +63,24 @@ public class HospitalizationInfo {
     public static void createHospitalInfo(
         HospitalizationReserved hospitalizationReserved
     ) {
-        Hospital hospital = new Hospital();
-        hospital.setBedsId(hospitalizationReserved.getBedsId());
-        hospital.setPatientId(hospitalizationReserved.getPatientId());
-        hospital.setHospitalizationId(hospitalizationReserved.getId());
-        hospital.setStatus("요청 받음");
-        repository().save(hospital);
+        HospitalizationInfo hospitalizationInfo = new HospitalizationInfo();
+        hospitalizationInfo.setBedsId(hospitalizationReserved.getBedsId());
+        hospitalizationInfo.setPatientId(hospitalizationReserved.getPatientId());
+        hospitalizationInfo.setReservationId(hospitalizationReserved.getId());
+        hospitalizationInfo.setStatus("요청");
+        repository().save(hospitalizationInfo);
     }
 
     public static void updateStatus(
-        HospitalizationCanceled hospitalizationCanceled
+        HospitalizationCancelled hospitalizationCancelled
     ) {
-        repository().findById(Long.valueOf(hospitalizationCancelled.getBedsId())).ifPresent(hospital->{
-            
-            if (!hospital.getStatus().equals("승인")){
-                hospital.setStatus("예약취소됨");
-                repository().save(hospital);
+        repository().findByReservationId(hospitalizationCancelled.getId()).ifPresent(hospitalInfo->{
+            // hospitalization과 hospital 상태 2개를 취소로 변경만 함
+            if (!hospitalInfo.getStatus().equals("승인")){
+                hospitalInfo.setStatus("요청취소");
+                repository().save(hospitalInfo);
             } else {
-                // 이벤트를 발행해야하는지 -> hospitalization과 hospital 상태 2개를 취소로 변경만 함
+                // 이벤트를 발행해야하는지 -> 발행 안하고 취소가 안됨을 출력만 함.
                 System.out.println(
                     "\n\n##### 예약취소 불가능함 : " +
                     "hospital.java - updateStatus 에서 예외처리" +

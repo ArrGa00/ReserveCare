@@ -11,5 +11,5 @@ public class HospitalizationRejected extends AbstractEvent {
 
     private Long id;
     private Long patientId;
-    private Long hospitalizationId;
+    private Long reservationId;
 }

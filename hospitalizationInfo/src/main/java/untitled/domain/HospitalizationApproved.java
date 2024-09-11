@@ -14,7 +14,7 @@ public class HospitalizationApproved extends AbstractEvent {
     private Long id;
     private Long bedsId;
     private Long patientId;
-    private Long hospitalizationId;
+    private Long reservationId;
 
     public HospitalizationApproved(HospitalizationInfo aggregate) {
         super(aggregate);

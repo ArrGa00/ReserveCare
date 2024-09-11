@@ -16,9 +16,9 @@ public class ReservationHateoasProcessor
             Link
                 .of(
                     model.getRequiredLink("self").getHref() +
-                    "//hospitalizationcancel"
+                    "/hospitalizationcancel"
                 )
-                .withRel("/hospitalizationcancel")
+                .withRel("hospitalizationcancel")
         );
 
         return model;

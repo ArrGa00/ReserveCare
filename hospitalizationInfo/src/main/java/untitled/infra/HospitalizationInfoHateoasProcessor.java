@@ -16,18 +16,18 @@ public class HospitalizationInfoHateoasProcessor
     ) {
         model.add(
             Link
-                .of(model.getRequiredLink("self").getHref() + "//approve")
-                .withRel("/approve")
+                .of(model.getRequiredLink("self").getHref() + "/approve")
+                .withRel("approve")
         );
         model.add(
             Link
-                .of(model.getRequiredLink("self").getHref() + "//discharge")
-                .withRel("/discharge")
+                .of(model.getRequiredLink("self").getHref() + "/discharge")
+                .withRel("discharge")
         );
         model.add(
             Link
-                .of(model.getRequiredLink("self").getHref() + "//reject")
-                .withRel("/reject")
+                .of(model.getRequiredLink("self").getHref() + "/reject")
+                .withRel("reject")
         );
 
         return model;

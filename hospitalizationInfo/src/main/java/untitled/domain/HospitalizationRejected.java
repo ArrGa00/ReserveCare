@@ -13,7 +13,7 @@ public class HospitalizationRejected extends AbstractEvent {
 
     private Long id;
     private Long patientId;
-    private Long hospitalizationId;
+    private Long reservationId;
 
     public HospitalizationRejected(HospitalizationInfo aggregate) {
         super(aggregate);

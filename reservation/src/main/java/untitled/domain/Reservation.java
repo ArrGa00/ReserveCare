@@ -24,9 +24,9 @@ public class Reservation {
 
     private String status;
 
-    @PrePersist
-    public void onPrePersist() {
-        this.setStatus("병원승인 대기");
+    @PostPersist
+    public void onPostPersist() {
+        this.setStatus("요청");
         HospitalizationReserved hospitalizationReserved = new HospitalizationReserved(this);
         hospitalizationReserved.publishAfterCommit();
     }
@@ -39,21 +39,16 @@ public class Reservation {
     }
 
     public void hospitalizationCancel() {
-        //implement business logic here:
-
-        HospitalizationCanceled hospitalizationCanceled = new HospitalizationCanceled(
-            this
-        );
-        hospitalizationCanceled.publishAfterCommit();
+        HospitalizationCancelled hospitalizationCancelled = new HospitalizationCancelled(this);
+        hospitalizationCancelled.publishAfterCommit();
     }
 
     public static void updateStatus(
         HospitalizationApproved hospitalizationApproved
     ) {
-        
-        repository().findById(hospitalizationApproved.getHospitalizationId()).ifPresent(hospitalization->{
-            hospitalization.setStatus("환자이송");
-            repository().save(hospitalization);
+        repository().findById(hospitalizationApproved.getReservationId()).ifPresent(reservation->{
+            reservation.setStatus("환자이송");
+            repository().save(reservation);
          });
 
     }
@@ -61,9 +56,9 @@ public class Reservation {
     public static void updateStatus(
         HospitalizationRejected hospitalizationRejected
     ) {
-        repository().findById(hospitalizationRejected.getHospitalizationId()).ifPresent(hospitalization->{
-            hospitalization.setStatus("요청거절"); // do something
-            repository().save(hospitalization);
+        repository().findById(hospitalizationRejected.getReservationId()).ifPresent(reservation->{
+            reservation.setStatus("거절"); 
+            repository().save(reservation);
          });
 
     }
