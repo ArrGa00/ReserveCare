@@ -15,9 +15,9 @@ public class HospitalHateoasProcessor
         model.add(
             Link
                 .of(
-                    model.getRequiredLink("self").getHref() + "//initializebeds"
+                    model.getRequiredLink("self").getHref() + "/initializebeds"
                 )
-                .withRel("/initializebeds")
+                .withRel("initializebeds")
         );
 
         return model;

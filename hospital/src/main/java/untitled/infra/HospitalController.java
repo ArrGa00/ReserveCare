@@ -13,7 +13,7 @@ import untitled.domain.*;
 //<<< Clean Arch / Inbound Adaptor
 
 @RestController
-// @RequestMapping(value="/hospitals")
+@RequestMapping(value="/hospitals")
 @Transactional
 public class HospitalController {
 
@@ -21,23 +21,19 @@ public class HospitalController {
     HospitalRepository hospitalRepository;
 
     @RequestMapping(
-        value = "/hospitals/{id}//initializebeds",
+        value = "/initializebeds",
         method = RequestMethod.PUT,
         produces = "application/json;charset=UTF-8"
     )
     public Hospital initializeBeds(
-        @PathVariable(value = "id") Long id,
         HttpServletRequest request,
         HttpServletResponse response
     ) throws Exception {
-        System.out.println("##### /hospital/initializeBeds  called #####");
-        Optional<Hospital> optionalHospital = hospitalRepository.findById(id);
+        System.out.println("##### /initializeBeds  called #####");
 
-        optionalHospital.orElseThrow(() -> new Exception("No Entity Found"));
-        Hospital hospital = optionalHospital.get();
+        Hospital hospital = new Hospital();
         hospital.initializeBeds();
 
-        hospitalRepository.save(hospital);
         return hospital;
     }
 }
