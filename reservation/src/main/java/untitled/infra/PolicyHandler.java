@@ -23,6 +23,7 @@ public class PolicyHandler {
     @StreamListener(KafkaProcessor.INPUT)
     public void whatever(@Payload String eventString) {}
 
+
     @StreamListener(
         value = KafkaProcessor.INPUT,
         condition = "headers['type']=='HospitalizationApproved'"
@@ -37,7 +38,6 @@ public class PolicyHandler {
             "\n\n"
         );
 
-        // Sample Logic //
         Reservation.updateStatus(event);
     }
 
@@ -55,7 +55,6 @@ public class PolicyHandler {
             "\n\n"
         );
 
-        // Sample Logic //
         Reservation.updateStatus(event);
     }
 }

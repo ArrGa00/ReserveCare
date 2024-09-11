@@ -24,11 +24,10 @@ public class Reservation {
 
     private String status;
 
-    @PostPersist
-    public void onPostPersist() {
-        HospitalizationReserved hospitalizationReserved = new HospitalizationReserved(
-            this
-        );
+    @PrePersist
+    public void onPrePersist() {
+        this.setStatus("병원승인 대기");
+        HospitalizationReserved hospitalizationReserved = new HospitalizationReserved(this);
         hospitalizationReserved.publishAfterCommit();
     }
 
@@ -39,7 +38,6 @@ public class Reservation {
         return reservationRepository;
     }
 
-    //<<< Clean Arch / Port Method
     public void hospitalizationCancel() {
         //implement business logic here:
 
@@ -49,59 +47,26 @@ public class Reservation {
         hospitalizationCanceled.publishAfterCommit();
     }
 
-    //>>> Clean Arch / Port Method
-
-    //<<< Clean Arch / Port Method
     public static void updateStatus(
         HospitalizationApproved hospitalizationApproved
     ) {
-        //implement business logic here:
-
-        /** Example 1:  new item 
-        Reservation reservation = new Reservation();
-        repository().save(reservation);
-
-        */
-
-        /** Example 2:  finding and process
         
-        repository().findById(hospitalizationApproved.get???()).ifPresent(reservation->{
-            
-            reservation // do something
-            repository().save(reservation);
-
-
+        repository().findById(hospitalizationApproved.getHospitalizationId()).ifPresent(hospitalization->{
+            hospitalization.setStatus("환자이송");
+            repository().save(hospitalization);
          });
-        */
 
     }
 
-    //>>> Clean Arch / Port Method
-    //<<< Clean Arch / Port Method
     public static void updateStatus(
         HospitalizationRejected hospitalizationRejected
     ) {
-        //implement business logic here:
-
-        /** Example 1:  new item 
-        Reservation reservation = new Reservation();
-        repository().save(reservation);
-
-        */
-
-        /** Example 2:  finding and process
-        
-        repository().findById(hospitalizationRejected.get???()).ifPresent(reservation->{
-            
-            reservation // do something
-            repository().save(reservation);
-
-
+        repository().findById(hospitalizationRejected.getHospitalizationId()).ifPresent(hospitalization->{
+            hospitalization.setStatus("요청거절"); // do something
+            repository().save(hospitalization);
          });
-        */
 
     }
-    //>>> Clean Arch / Port Method
 
 }
 //>>> DDD / Aggregate Root
