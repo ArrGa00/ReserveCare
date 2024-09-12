@@ -30,13 +30,13 @@ public class PatientController {
         HttpServletRequest request,
         HttpServletResponse response
     ) throws Exception {
-        System.out.println("##### /patient/patientupdate  called #####");
+        System.out.println("##### /patients/patientupdate  called #####");
         Optional<Patient> optionalPatient = patientRepository.findById(id);
 
         optionalPatient.orElseThrow(() -> new Exception("No Entity Found"));
         Patient patient = optionalPatient.get();
 
-        return patient.getPatientName;
+        return patient.getPatientName();
         //return patient.getPatientName(id);
     }
 

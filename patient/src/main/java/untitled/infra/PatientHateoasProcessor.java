@@ -22,7 +22,6 @@ public class PatientHateoasProcessor
                 .of(model.getRequiredLink("self").getHref() + "/patientdelete")
                 .withRel("patientdelete")
         );
-
         return model;
     }
 }
