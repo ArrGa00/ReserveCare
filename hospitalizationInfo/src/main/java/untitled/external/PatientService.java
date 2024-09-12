@@ -14,6 +14,6 @@ import java.util.List;
 public interface PatientService {
     
     @RequestMapping(method= RequestMethod.GET, path="patients/getNamebyId/{id}")
-    public GetNameById getPatientNameById(@PathVariable("id") Long id);
+    public String getPatientNameById(@PathVariable("id") Long id);
  
 }

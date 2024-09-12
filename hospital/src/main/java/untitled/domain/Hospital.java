@@ -85,6 +85,32 @@ public class Hospital  {
     }
 
     public void initializeBeds(){
+
+        Map<String, List<String>> regionMap = sidoList();
+        // 지역 데이터를 기반으로 API 호출 및 병원 데이터 저장
+        for (Map.Entry<String, List<String>> entry : regionMap.entrySet()) {
+            String sido = entry.getKey(); // 시도 (예: 서울특별시, 경기도)
+            List<String> guList = entry.getValue(); // 구 리스트
+
+            for (String gu : guList) {
+                // 시도와 구를 기반으로 API 호출
+                List<Hospital> hospitalDataList = remainBedsApiParseXml(sido, gu);
+
+                // API로부터 데이터가 정상적으로 받아지면 저장
+                if (hospitalDataList != null && !hospitalDataList.isEmpty()) {
+                    HospitalRepository hospitalRepository = repository();
+
+                    for (Hospital hospital : hospitalDataList) {
+                        hospitalRepository.save(hospital); // 병원 데이터 저장
+                    }
+
+                    System.out.println(sido + " " + gu + ": " + hospitalDataList.size() + " hospitals saved.");
+                } else {
+                    System.out.println(sido + " " + gu + ": No data found from API or an error occurred.");
+                }
+            }
+        }
+
         List<Hospital> hospitalDataList = remainBedsApiParseXml("경기도", "분당구");
 
         if (hospitalDataList != null && !hospitalDataList.isEmpty()) {
@@ -252,6 +278,57 @@ public class Hospital  {
             }
          });
         
+    }
+
+    public Map<String, List<String>> sidoList() {
+        // 데이터를 저장할 Map
+        Map<String, List<String>> regionMap = new HashMap<>();
+
+        // 서울특별시 구 리스트
+        List<String> seoulDistricts = new ArrayList<>();
+        seoulDistricts.add("종로구");
+        seoulDistricts.add("중구");
+        seoulDistricts.add("용산구");
+        seoulDistricts.add("성동구");
+        seoulDistricts.add("광진구");
+        seoulDistricts.add("동대문구");
+        seoulDistricts.add("중랑구");
+        seoulDistricts.add("성북구");
+        seoulDistricts.add("강북구");
+        seoulDistricts.add("도봉구");
+        seoulDistricts.add("노원구");
+        seoulDistricts.add("은평구");
+        seoulDistricts.add("서대문구");
+        seoulDistricts.add("마포구");
+        seoulDistricts.add("양천구");
+        seoulDistricts.add("강서구");
+        seoulDistricts.add("구로구");
+        seoulDistricts.add("금천구");
+        seoulDistricts.add("영등포구");
+        seoulDistricts.add("동작구");
+        seoulDistricts.add("관악구");
+        seoulDistricts.add("서초구");
+        seoulDistricts.add("강남구");
+        seoulDistricts.add("송파구");
+        seoulDistricts.add("강동구");
+
+        // 성남시 구 리스트
+        List<String> seongnamDistricts = new ArrayList<>();
+        seongnamDistricts.add("수정구");
+        seongnamDistricts.add("중원구");
+        seongnamDistricts.add("분당구");
+
+        // Map에 지역과 구 리스트를 저장
+        regionMap.put("서울특별시", seoulDistricts);
+        regionMap.put("성남시", seongnamDistricts);
+
+        // 출력
+        System.out.println("지역별 구 리스트:");
+        for (Map.Entry<String, List<String>> entry : regionMap.entrySet()) {
+            System.out.println(entry.getKey() + ": " + entry.getValue());
+        }
+
+        return regionMap;
     }
 
 }

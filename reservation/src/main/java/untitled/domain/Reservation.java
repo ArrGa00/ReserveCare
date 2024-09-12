@@ -43,6 +43,7 @@ public class Reservation {
         hospitalizationCancelled.publishAfterCommit();
     }
 
+
     public static void updateStatus(
         HospitalizationApproved hospitalizationApproved
     ) {
@@ -60,7 +61,6 @@ public class Reservation {
             reservation.setStatus("거절"); 
             repository().save(reservation);
          });
-
     }
 
 }

@@ -87,11 +87,9 @@ public class PolicyHandler {
                 .orElseThrow(() -> new Exception("No Entity Found"));
     
             // REST Request
-            System.out.println("req 요청을 보내도록 하겠습니다.");
-            GetNameById patientInfo = patientService.getPatientNameById(hospitalizationApproved.getPatientId());
-            System.out.println("\n\n\n\n\n" + patientInfo.getPatientName() );
+            String name = patientService.getPatientNameById(hospitalizationApproved.getPatientId());
     
-            hospitalizationInfo.setPatientName(patientInfo.getPatientName());
+            hospitalizationInfo.setPatientName(name);
             hospitalizationInfo.setStatus("승인");
             hospitalizationInfo.setStartDate(LocalDateTime.now());
             hospitalizationInfoRepository.save(hospitalizationInfo);

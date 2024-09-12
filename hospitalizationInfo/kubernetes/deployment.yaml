@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: hospitalizationinfo
-          image: "username/hospitalizationinfo:latest"
+          image: "hhhoh/hospitalizationinfo:240912"
           ports:
             - containerPort: 8080
           readinessProbe:
