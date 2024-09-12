@@ -21,6 +21,26 @@ public class PatientController {
     PatientRepository patientRepository;
 
     @RequestMapping(
+        value = "/patients/getNamebyId/{id}",
+        method = RequestMethod.GET,
+        produces = "application/json;charset=UTF-8"
+    )
+    public String getNamebyId(
+        @PathVariable(value = "id") Long id,
+        HttpServletRequest request,
+        HttpServletResponse response
+    ) throws Exception {
+        System.out.println("##### /patient/patientupdate  called #####");
+        Optional<Patient> optionalPatient = patientRepository.findById(id);
+
+        optionalPatient.orElseThrow(() -> new Exception("No Entity Found"));
+        Patient patient = optionalPatient.get();
+
+        return patient.getPatientName;
+        //return patient.getPatientName(id);
+    }
+
+    @RequestMapping(
         value = "/patients/{id}/patientupdate",
         method = RequestMethod.PUT,
         produces = "application/json;charset=UTF-8"

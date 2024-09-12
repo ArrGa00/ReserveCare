@@ -54,6 +54,14 @@ public class Patient {
         PatientDeleted patientDeleted = new PatientDeleted(this);
         patientDeleted.publishAfterCommit();
     }
+    /*
+    public String getPatientName(Long id){
+        repository().findById(id).ifPresent(patient->{
+            String name = patient.getPatientName;
+         });
+        return name;
+    }
+    */
 
     //>>> Clean Arch / Port Method
 
