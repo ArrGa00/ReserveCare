@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: reservation
-          image: "hhhoh/reservation:240912"
+          image: "hhhoh/reservation:2409122"
           ports:
             - containerPort: 8080
           readinessProbe:
