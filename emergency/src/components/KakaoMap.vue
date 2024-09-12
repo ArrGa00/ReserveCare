@@ -49,7 +49,7 @@ export default {
       this.fetchHospitalData();
     },
     fetchHospitalData() {
-      fetch('http://20.249.182.66:8080/hospitals')
+      fetch('http://20.249.182.66:8080/hospitals?size=100')
         .then(response => response.json())
         .then(data => {
           const hospitals = data._embedded.hospitals;

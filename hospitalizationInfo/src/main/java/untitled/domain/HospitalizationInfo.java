@@ -80,7 +80,7 @@ public class HospitalizationInfo {
                 hospitalInfo.setStatus("요청취소");
                 repository().save(hospitalInfo);
             } else {
-                // 이벤트를 발행해야하는지 -> 발행 안하고 취소가 안됨을 출력만 함.
+                // 이벤트 발행 없이 취소가 안됨을 출력으로 확인만 함
                 System.out.println(
                     "\n\n##### 예약취소 불가능함 : " +
                     "hospital.java - updateStatus 에서 예외처리" +
