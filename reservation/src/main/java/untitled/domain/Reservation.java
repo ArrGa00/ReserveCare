@@ -24,17 +24,11 @@ public class Reservation {
 
     private String status;
 
-
     @PostPersist
     public void onPostPersist() {
         this.setStatus("요청");
         HospitalizationReserved hospitalizationReserved = new HospitalizationReserved(this);
         hospitalizationReserved.publishAfterCommit();
-
-        repository().findById(hospitalizationReserved.getId()).ifPresent(reservation->{
-            reservation.setStatus("요청");
-            repository().save(reservation);
-         });
     }
 
     public static ReservationRepository repository() {
@@ -48,6 +42,7 @@ public class Reservation {
         HospitalizationCancelled hospitalizationCancelled = new HospitalizationCancelled(this);
         hospitalizationCancelled.publishAfterCommit();
     }
+
 
     public static void updateStatus(
         HospitalizationApproved hospitalizationApproved
