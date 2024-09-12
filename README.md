@@ -1,92 +1,130 @@
-# 
+# ⭐ 응급구조 양방향 서비스 ⭐
 
-## Model
-www.msaez.io/#/storming/179681851_es_hospital
+---
 
-## Before Running Services
-### Make sure there is a Kafka server running
-```
-cd kafka
-docker-compose up
-```
-- Check the Kafka messages:
-```
-cd infra
-docker-compose exec -it kafka /bin/bash
-cd /bin
-./kafka-console-consumer --bootstrap-server localhost:9092 --topic
-```
+**응급구조 양방향 서비스**는 병상 가용성, 환자 입원 및 예약 추적을 관리하는 종합 솔루션이다. </br> 
+마이크로서비스 아키텍처를 기반으로 구축되어 확장성, 모듈성 및 통합 용이성을 제공한다.
 
-## Run the backend micro-services
-See the README.md files inside the each microservices directory:
+---
 
-- hospitalizationinfo
-- hospital
-- patient
-- reservation
+## ☑ 개요
+
+입원 관리 시스템은 구급대원과 병원의 연결과 운영을 효율적으로 관리하기 위해 설계하였다. </br>
+병상 가용성 정보를 실시간으로 수집하고, 수집된 데이터를 토대로 환자 입원을 신청/취소하여 병상 예약 요청을 관리한다. </br>
+병원, 환자 및 예약 데이터를 통합하여 병상 자원 활용과 환자 연계 흐름을 개선하는 데 기여할 수 있다.
+
+[**프로젝트 설계도**] </br>
+![img](https://github.com/user-attachments/assets/7048f84a-b845-4d17-9a09-ff7a83692a5c)
+
+---
+## ☑ 서비스 시나리오
+### ▶ 기능적 요구사항
+1. 구급 대원은 환자 정보를 등록/수정/삭제할 수 있다.
+2. 현재 위치(GPS) 혹은 특정 지역 내에서 조건(거리, 가용 병상 유무 등) 을 만족하는 병원을 MAP 형태로 볼 수 있다.
+3. 예약이 이루어진다면 예약 내역(Message)이 전달된다.
+4. 예약 사항이 취소될 경우 취소 내역이 전달된다.
+5. 병원관리자는 예약 신청을 접수하거나 반려할 수 있다.
+6. 환자 이송이 완료되면 이송 건을 종료하며 가용 병상 정보를 업데이트한다.
+7. 환자 퇴원시 가용병상 정보를 업데이트한다.
+
+###  ▶ 비기능적 요구사항
+(작성중)
+
+---
+
+## ☑ 마이크로서비스 아키텍처
+
+### 1. 병원 서비스
+병원 서비스는 병원의 자원, 특히 가용 병상을 실시간으로 관리한다.</br>
+초기 데이터는 공공데이터 포털에서 제공 받아 초기화한다.</br>
+입원 정보 서비스와 연계하여 최신 병상 가용 정보를 제공한다.</br>
+
+- **주요 기능:**
+  - 병원 자원 관리
+  - 실시간 의료 자원 가용성 모니터링
+
+### 2. 환자 서비스
+병원에 입원하기 위한 환자 관련 모든 데이터를 처리한다.</br>
+예약 및 입퇴원 정보 서비스와 연결된다.
+
+- **주요 기능:**
+  - 환자 등록 및 데이터 관리
+
+### 3. 예약 서비스
+예약 서비스는 병상 예약 요청을 관리하고 추적한다. </br>
+가용 가능한 병상 배정에 입원 요청을 전송/취소 할 수 있다.</br>
+따라서 구급 대원은 환자 입원 예약 과정을 원활하게 처리할 수 있다.</br>
+
+- **주요 기능:**
+  - 병상 예약 관리
+  - 실시간 가용성에 기반한 병상 예약 요청
+
+### 4. 입원 정보 서비스
+환자의 입퇴원 정보를 관리한다. </br>
+병원은 구급대원이 요청한 환자들의 입원 요청을 승인/거절할 수 있다</br>
+
+- **주요 기능:**
+    - 환자의 입/퇴원 정보
+    - 병상 점유 상태 업데이트
+    - 환자 입원 예약을 승인/취소
+---
+
+## ☑ 차별점
+
+- **실시간 병상 가용성**: 시스템은 병상의 실시간 가용성을 추적하고, 병원 직원이 신속하게 정보를 기반으로 결정을 내릴 수 있도록 한다.
+
+- **환자 중심 설계**: 환자 정보를 제공하여 병원이 필요한 환자 정보를 손쉽게 확인할 수 있도록 한다.
+
+- **예약 관리**: 병상 가용성에 따라 예약 요청을 승인 또는 거부할 수 있으며, 이를 통해 환자 대기 시간을 줄이고 입원 절차를 최적화할 수 있다.
+
+- **마이크로서비스 확장성**: 시스템의 각 서비스는 독립적으로 확장 가능하다.
+
+---
+
+## ☑ 설계
+
+### Event Storming 결과
+
+#### - 이벤트 도출 초안
+![image2](https://github.com/user-attachments/assets/8260ffed-d39f-49a0-92e1-2b58d91bcc36)
+
+#### - 최종 Event 도출 결과
+![image3](https://github.com/user-attachments/assets/e2a148e8-2fa1-45ff-9afe-a3afc2118f41)
+- 이벤트스토밍 과정 중 도출된 잘못된 도메인 이벤트들을 걸러내는 작업을 수행함
+- 하단 세 가지의 이벤트는 event가 아닌 policy의 개념이거나, 불필요한 행동이므로 이벤트에서 삭제
+
+### MSAEz 유즈케이스
+1. Actor와 Command를 부착하여 가독성 높이기
+   ![image4](https://github.com/user-attachments/assets/97ba2e8c-2c05-4161-9fe2-290e327146f1)
+
+2. Aggregate으로 묶기
+   ![image5](https://github.com/user-attachments/assets/e9af4816-09b1-414f-be83-5198fa12abd2)
+
+3. 바운디드 컨텍스트로 묶기
+   ![image6](https://github.com/user-attachments/assets/bcf2e4cd-e51d-4bce-a554-45fd8eead68d)
+
+4. 폴리시 부착
+   ![image7](https://github.com/user-attachments/assets/8bff5404-bd64-453a-bbb1-9bd771f86ba6)
+
+5. Policy의 이동과 Context 매핑
+   ![image8](https://github.com/user-attachments/assets/6dd9d0c5-64a4-4436-9b0f-f3ea69ccc518)
+
+6. 기능적 요구사항 추적
+   ![image9](https://github.com/user-attachments/assets/098687d1-fdfb-4079-b788-86e766129f41)
+6-1. 구급 대원은 환자 정보 (필요한 특수 병상 포함/미포함)을 등록/수정/삭제할 수 있다. (완료)![image11](https://github.com/user-attachments/assets/a214fdaf-cfda-4b54-a075-335dc5bba200)
+   ![image10](https://github.com/user-attachments/assets/91ce888c-db71-4a0e-a749-24e58d66e873)
+6-2. 현재 위치(GPS) 혹은 특정 지역 내에서 조건(거리, 가용 병상 유무 등) 을 만족하는 병원을 MAP 형태로 볼 수 있다. (완료)![image13](https://github.com/user-attachments/assets/8a6c1fd2-1f74-42fa-bdb8-c4ba39284b04)
+   ![image11](https://github.com/user-attachments/assets/a214fdaf-cfda-4b54-a075-335dc5bba200)
+6-3. 예약이 이루어진다면 예약 내역(Message)이 전달된다. (완료) </br>
+6-4. 예약 사항이 취소될 경우 취소 내역이 전달된다. (완료) </br>
+6-5. 병원관리자는 예약 신청을 접수하거나 반려할 수 있다. (완료)
+   ![image12](https://github.com/user-attachments/assets/44606ec2-e859-4af5-a8c3-e0c7614557ae)
+6-6. 환자 이송이 완료되면 이송 건을 종료하며 가용 병상 정보를 업데이트한다. (완료)
+   ![image13](https://github.com/user-attachments/assets/8a6c1fd2-1f74-42fa-bdb8-c4ba39284b04)
+6-7. 환자 퇴원시 가용병상 정보를 업데이트한다. (완료)
+---
+## ☑ 구현
 
 
-## Run API Gateway (Spring Gateway)
-```
-cd gateway
-mvn spring-boot:run
-```
 
-## Test by API
-- hospitalizationinfo
-```
- http :8088/hospitalizationInfos id="id" bedsId="bedsId" startDate="startDate" endDate="endDate" patientId="patientId" status="status" hospitalizationId="hospitalizationId" patientName="patientName" 
-```
-- hospital
-```
- http :8088/hospitals id="id" hospitalName="hospitalName" lat="lat" lng="lng" remain="remain" totalBeds="totalBeds" hpid="hpid" 
-```
-- patient
-```
- http :8088/patients id="id" patientName="patientName" patientDisease="patientDisease" patientNumber="patientNumber" status="status" 
-```
-- reservation
-```
- http :8088/reservations id="id" patientId="patientId" bedsId="bedsId" status="status" 
-```
-
-
-## Run the frontend
-```
-cd frontend
-npm i
-npm run serve
-```
-
-## Test by UI
-Open a browser to localhost:8088
-
-## Required Utilities
-
-- httpie (alternative for curl / POSTMAN) and network utils
-```
-sudo apt-get update
-sudo apt-get install net-tools
-sudo apt install iputils-ping
-pip install httpie
-```
-
-- kubernetes utilities (kubectl)
-```
-curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
-```
-
-- aws cli (aws)
-```
-curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-unzip awscliv2.zip
-sudo ./aws/install
-```
-
-- eksctl 
-```
-curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
-sudo mv /tmp/eksctl /usr/local/bin
-```
-
+---
