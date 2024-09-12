@@ -18,6 +18,6 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: hhhoh/emergency:2409123
+          image: arrga00/emergency:20240913
           ports:
             - containerPort: 8080

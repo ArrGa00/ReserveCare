@@ -36,5 +36,22 @@ public class HospitalController {
 
         return hospital;
     }
+
+    @RequestMapping(
+        value = "/all",
+        method = RequestMethod.GET,
+        produces = "application/json;charset=UTF-8"
+    )
+    public Hospital getAllHospitals(
+        HttpServletRequest request,
+        HttpServletResponse response
+    ) throws Exception {
+        System.out.println("##### /all  called #####");
+
+        Hospital hospital = new Hospital();
+        hospital.initializeBeds();
+
+        return hospital;
+    }
 }
 //>>> Clean Arch / Inbound Adaptor

@@ -93,6 +93,7 @@ public class Hospital  {
             List<String> guList = entry.getValue(); // 구 리스트
 
             for (String gu : guList) {
+                System.out.println("시도: " + sido + " 시군구: "+ gu);
                 // 시도와 구를 기반으로 API 호출
                 List<Hospital> hospitalDataList = remainBedsApiParseXml(sido, gu);
 
@@ -109,18 +110,6 @@ public class Hospital  {
                     System.out.println(sido + " " + gu + ": No data found from API or an error occurred.");
                 }
             }
-        }
-
-        List<Hospital> hospitalDataList = remainBedsApiParseXml("경기도", "분당구");
-
-        if (hospitalDataList != null && !hospitalDataList.isEmpty()) {
-            HospitalRepository hospitalRepository = repository();
-
-            for (Hospital hospital : hospitalDataList) {
-                hospitalRepository.save(hospital);
-            }
-        } else {
-            System.out.println("No data found from API or an error occurred.");
         }
     }
 
@@ -319,8 +308,8 @@ public class Hospital  {
         seongnamDistricts.add("분당구");
 
         // Map에 지역과 구 리스트를 저장
-        regionMap.put("서울특별시", seoulDistricts);
         regionMap.put("성남시", seongnamDistricts);
+        regionMap.put("서울특별시", seoulDistricts);
 
         // 출력
         System.out.println("지역별 구 리스트:");
