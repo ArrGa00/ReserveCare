@@ -64,7 +64,7 @@ public class PatientController {
         patient.patientUpdate();
         patientRepository.save(patient);
         return patient;
-    }
+    }d
 
     @RequestMapping(
         value = "/patients/{id}/patientdelete",

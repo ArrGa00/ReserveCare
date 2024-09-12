@@ -1,0 +1,270 @@
+<template>
+  <v-container fluid>
+    <v-row>
+      <v-col cols="6">
+        <div class="left-panel">
+          <!-- 환자 정보 입력 폼 -->
+          <v-form v-model="valid" @submit.prevent="submitPatientForm">
+            <v-text-field
+              v-model="patient.name"
+              label="환자 이름"
+              :rules="[rules.required]"
+              required
+            ></v-text-field>
+
+            <v-text-field
+              v-model="patient.disease"
+              label="질병 명"
+              :rules="[rules.required]"
+              required
+            ></v-text-field>
+
+            <v-text-field
+              v-model="patient.phone"
+              label="전화번호"
+              :rules="[rules.required, rules.phone]"
+              required
+            ></v-text-field>
+
+            <v-btn :disabled="!valid" color="primary" type="submit">
+              입력
+            </v-btn>
+          </v-form>
+
+          <!-- 선택한 병원 정보 표시 -->
+          <div v-if="selectedHospital" class="hospital-info">
+            <h3>선택된 병원 정보</h3>
+            <p>병원 이름: {{ selectedHospital.hospitalName }}</p>
+            <p>도로명주소: {{ selectedHospital.roadAddress }}</p>
+            <p>지번주소: {{ selectedHospital.jibunAddress }}</p>
+            <p>남은 병상: {{ selectedHospital.remain }}</p>
+            <p>Beds ID: {{ selectedHospital.bedsId }}</p>
+
+            <v-btn color="success" @click="reserveBed">예약</v-btn>
+          </div>
+
+          <!-- 기존 예약 내역 표시 -->
+          <div v-if="reservations.length" class="reservations">
+            <h3>예약 내역</h3>
+            <v-list>
+              <v-list-item-group v-for="reservation in reservations" :key="reservation.bedsId">
+                <v-list-item style="background-color: block;">
+                  <v-list-item-content>
+                    <v-list-item-title>
+                      {{ reservation.patientName }} - {{ reservation.hospitalName }}
+                    </v-list-item-title>
+                    <v-list-item-subtitle>
+                      질병: {{ reservation.patientDisease }}
+                    </v-list-item-subtitle>
+                    <v-list-item-subtitle>
+                      전화번호: {{ reservation.patientNumber }}
+                    </v-list-item-subtitle>
+                    <v-list-item-subtitle>
+                      상태: {{ reservation.status }}
+                    </v-list-item-subtitle>
+
+                    <!-- 상태가 approved가 아니면 체크박스 표시 -->
+                    <v-checkbox
+                      v-if="reservation.status !== 'approved'"
+                      v-model="reservation.checked"
+                      label="이 예약을 승인"
+                    ></v-checkbox>
+                  </v-list-item-content>
+                </v-list-item>
+              </v-list-item-group>
+            </v-list>
+          </div>
+        </div>
+      </v-col>
+
+      <v-col cols="6">
+        <div class="right-panel">
+          <KakaoMap
+            :latitude="latitude"
+            :longitude="longitude"
+            @select-hospital="handleSelectHospital"
+          />
+        </div>
+      </v-col>
+    </v-row>
+  </v-container>
+</template>
+
+<script>
+import KakaoMap from './KakaoMap.vue';
+
+export default {
+  components: {
+    KakaoMap
+  },
+  data() {
+    return {
+      valid: false,
+      patient: {
+        name: '',
+        disease: '',
+        phone: ''
+      },
+      latitude: null,
+      longitude: null,
+      patientId: null,
+      selectedHospital: null, // 선택된 병원 정보
+      reservations: [], // 예약 내역
+      rules: {
+        required: value => !!value || '필수 입력 항목입니다.',
+        phone: value => {
+          const phonePattern = /^[0-9]{3}-[0-9]{4}-[0-9]{4}$/;
+          return phonePattern.test(value) || '유효한 전화번호를 입력하세요 (예: 010-1234-5678)';
+        }
+      },
+      fetchInterval: null // Interval ID
+    };
+  },
+  created() {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(this.setPosition, this.handleError);
+    } else {
+      alert('Geolocation is not supported by this browser.');
+    }
+    this.fetchReservations(); // 예약 내역을 가져옵니다.
+    this.startFetchingReservations(); // 2초마다 예약 내역을 가져옵니다.
+  },
+  beforeDestroy() {
+    // 컴포넌트가 파괴될 때 interval을 클리어합니다.
+    if (this.fetchInterval) {
+      clearInterval(this.fetchInterval);
+    }
+  },
+  methods: {
+    setPosition(position) {
+      this.latitude = position.coords.latitude;
+      this.longitude = position.coords.longitude;
+    },
+    handleError(error) {
+      console.error('Error getting geolocation:', error);
+      alert('Unable to retrieve your location.');
+    },
+    handleSelectHospital(hospitalData) {
+      this.selectedHospital = hospitalData; // 선택된 병원 정보 저장
+    },
+    submitPatientForm() {
+      const payload = {
+        name: this.patient.name,
+        disease: this.patient.disease,
+        phone: this.patient.phone
+      };
+
+      fetch('http://20.249.182.66:8080/patients', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      })
+        .then(response => response.json())
+        .then(data => {
+          alert('환자 정보가 성공적으로 제출되었습니다.');
+          const patientHref = data._links.patient.href;
+          this.patientId = this.extractPatientIdFromUrl(patientHref); // patientId 저장
+        })
+        .catch(error => {
+          console.error('Error submitting patient data:', error);
+          alert('환자 정보를 제출하는 중 오류가 발생했습니다.');
+        });
+    },
+    extractPatientIdFromUrl(url) {
+      const urlParts = url.split('/');
+      return urlParts[urlParts.length - 1];
+    },
+    reserveBed() {
+      if (!this.patientId || !this.selectedHospital) {
+        alert('환자 정보와 병원 정보를 모두 입력해주세요.');
+        return;
+      }
+
+      const payload = {
+        patientId: this.patientId,
+        bedsId: this.selectedHospital.bedsId,
+        hospitalId: 'some_hospital_id',
+        admissionDate: new Date().toISOString(),
+        dischargeDate: null
+      };
+
+      fetch('http://20.249.182.66:8080/hospitalizations', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      })
+        .then(response => response.json())
+        .then(data => {
+          alert('예약이 성공적으로 완료되었습니다.');
+          this.fetchReservations(); // 예약이 완료되면 예약 내역을 다시 가져옵니다.
+        })
+        .catch(error => {
+          console.error('Error making reservation:', error);
+          alert('예약하는 중 오류가 발생했습니다.');
+        });
+    },
+    fetchReservations() {
+      fetch('http://20.249.182.66:8080/hospitalizations')
+        .then(response => response.json())
+        .then(data => {
+          const reservations = data._embedded.hospitalizations;
+
+          const fetchDetails = reservations.map(reservation => {
+            return Promise.all([
+              fetch(`http://20.249.182.66:8080/patients/${reservation.patientId}`).then(res => res.json()),
+              fetch(`http://20.249.182.66:8080/beds/${reservation.bedsId}`).then(res => res.json())
+            ]).then(([patientData, bedData]) => {
+              return {
+                patientName: patientData.patientName,
+                patientDisease: patientData.patientDisease,
+                patientNumber: patientData.patientNumber,
+                hospitalName: bedData.hospitalName,
+                status: reservation.status,
+                checked: false // 체크박스 상태를 위한 속성 추가
+              };
+            });
+          });
+
+          Promise.all(fetchDetails).then(results => {
+            this.reservations = results;
+          });
+        })
+        .catch(error => {
+          console.error('Error fetching reservations:', error);
+        });
+    },
+    startFetchingReservations() {
+      // 2초마다 fetchReservations 호출
+      this.fetchInterval = setInterval(() => {
+        this.fetchReservations();
+      }, 2000);
+    }
+  }
+};
+</script>
+
+<style>
+.left-panel {
+  background-color: #f5f5f5;
+  height: 100vh;
+  padding: 16px;
+}
+
+.right-panel {
+  background-color: #e0e0e0;
+  height: 100vh;
+  padding: 0;
+}
+
+.hospital-info {
+  margin-top: 20px;
+}
+
+.reservations {
+  margin-top: 20px;
+}
+</style>
