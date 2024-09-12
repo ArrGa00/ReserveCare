@@ -86,10 +86,29 @@ public class Hospital  {
 
     public void initializeBeds(){
 
-        // 출력
         Map<String, List<String>> regionMap = sidoList();
+        // 지역 데이터를 기반으로 API 호출 및 병원 데이터 저장
         for (Map.Entry<String, List<String>> entry : regionMap.entrySet()) {
-            System.out.println(entry.getKey() + ": " + entry.getValue());
+            String sido = entry.getKey(); // 시도 (예: 서울특별시, 경기도)
+            List<String> guList = entry.getValue(); // 구 리스트
+
+            for (String gu : guList) {
+                // 시도와 구를 기반으로 API 호출
+                List<Hospital> hospitalDataList = remainBedsApiParseXml(sido, gu);
+
+                // API로부터 데이터가 정상적으로 받아지면 저장
+                if (hospitalDataList != null && !hospitalDataList.isEmpty()) {
+                    HospitalRepository hospitalRepository = repository();
+
+                    for (Hospital hospital : hospitalDataList) {
+                        hospitalRepository.save(hospital); // 병원 데이터 저장
+                    }
+
+                    System.out.println(sido + " " + gu + ": " + hospitalDataList.size() + " hospitals saved.");
+                } else {
+                    System.out.println(sido + " " + gu + ": No data found from API or an error occurred.");
+                }
+            }
         }
 
         List<Hospital> hospitalDataList = remainBedsApiParseXml("경기도", "분당구");
