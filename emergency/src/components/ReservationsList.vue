@@ -15,16 +15,16 @@
             </v-list-item-action>
           </template>
           <v-list-item-content>
-            <v-list-item-title>
+            <v-list-item-title class="large-text">
               {{ reservation.patientName }} - {{ reservation.hospitalName }}
             </v-list-item-title>
-            <v-list-item-subtitle>
+            <v-list-item-subtitle class="large-text">
               질병: {{ reservation.patientDisease }}
             </v-list-item-subtitle>
-            <v-list-item-subtitle>
+            <v-list-item-subtitle class="large-text">
               전화번호: {{ reservation.patientNumber }}
             </v-list-item-subtitle>
-            <v-list-item-subtitle>
+            <v-list-item-subtitle class="large-text">
               상태: {{ reservation.status }}
             </v-list-item-subtitle>
 
@@ -96,9 +96,17 @@ export default {
 }
 
 .scrollable-list {
-  max-height: 400px;
+  max-height: 600px;
   overflow-y: auto;
   background-color: #fff;
+}
+
+
+.large-text {
+  height: 30px;
+  overflow: visible;
+  font-size: 20px; 
+  padding: 0 2
 }
 
 .custom-divider {

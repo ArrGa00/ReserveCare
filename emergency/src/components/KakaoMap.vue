@@ -38,13 +38,14 @@ export default {
       document.head.appendChild(script);
     },
     loadMap() {
+      
       const container = document.getElementById('map');
       const options = {
         center: new window.kakao.maps.LatLng(this.latitude, this.longitude),
         level: 3
       };
       this.map = new window.kakao.maps.Map(container, options);
-  
+      
       this.geocoder = new window.kakao.maps.services.Geocoder();
       this.fetchHospitalData();
     },

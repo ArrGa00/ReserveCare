@@ -77,3 +77,16 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+.input-large input {
+  font-size: 32px; /* Twice the normal font size (adjust as needed) */
+  height: 80px; /* Twice the normal input field height */
+  padding: 16px; /* Increase padding for better alignment */
+}
+
+.btn-large {
+  font-size: 18px;
+  padding: 12px 24px;
+}
+</style>

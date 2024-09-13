@@ -73,6 +73,7 @@ export default {
       alert('Geolocation is not supported by this browser.');
     }
     */
+
     this.setPosition([37.358827,127.1148689])
     this.fetchReservations();
     this.startFetchingReservations();
@@ -229,7 +230,6 @@ export default {
       }, 2000);
     },
     handleUpdateCheckedReservations({ reservation, checked }) {
-        alert(JSON.stringify(reservation))
         this.checked = !this.checked
         this.checkedReservations = reservation
     //   this.$set(this.checkedReservations, reservation, checked);
